@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!--=============== REMIXICONS ===============-->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+
+    <!--=============== CSS ===============-->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+    <title>Reverse Image Search</title>
+</head>
+<style>
+ .image_container {
+            display: flex; /* Display images side by side */
+            justify-content: space-between; /* Space them evenly */
+            align-items: center; /* Align vertically */
+            margin-bottom: 20px;
+        }
+
+        .image_container .gallery {
+            max-width: 45%; /* Limit maximum width */
+        }
+
+        .image_container h2 {
+            margin-bottom: 10px;
+        }
+
+        .image_container img {
+            max-width: 100%; /* Make images responsive */
+            height: auto;
+        }
+        </style>
+<body>
+    <!--=============== AJAX ===============-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#myform').submit(function (event) {
+                event.preventDefault();
+                upload_file();
+            });
+        });
+
+        $(document).ready(function () {
+            $('#alert_email_checkbox').change(function (event) {
+                event.preventDefault();
+                data = {
+                    'alert_email_checkbox': $('#alert_email_checkbox').is(':checked'),
+                    'alert_email_textbox': $('#alert_email_textbox').val(),
+                };
+                $.ajax({
+                    type: 'POST',
+                    url: '/submit',
+                    data: data,
+                    success: function (data) {
+                        alert(data);
+                    },
+                    error: function (error) {
+                        alert('Checkbox submission failed!');
+                    }
+                });
+            });
+        });
+
+        function upload_file() {
+            var formData = new FormData($('#myform')[0]);
+            $.ajax({
+                type: 'POST',
+                url: '/',
+                data: formData,
+                processData: false,
+                contentType: false,
+                cache: false,
+               // Inside the success callback of the AJAX call for uploading the image
+		success: function (data) {
+                $('#uploaded_image').attr('src', 'data:image/jpeg;base64,' + data.uploaded.image);
+                $('#uploaded_image_filename').text('Uploaded Face: ' + data.uploaded.filename);
+                
+                $('#similar_image').attr('src', 'data:image/jpeg;base64,' + data.similar.image);
+                $('#similar_image_filename').text('Similar Face: ' + data.similar.filename);
+                $('#similar_image_path').text('Similar Image Path: ' + data.similar.path);
+                $('#similarity_value').text('Similarity Value: ' + data.similar.similarity.toFixed(2));
+            },
+                error: function (error) {
+                    alert('Form submission failed!');
+                }
+            });
+        }
+    </script>
+
+    <!-- =============== HEADER =============== -->
+    <header class="header" id="header">
+        <div class="title">
+            <h1>Reverse Image Search</h1>
+        </div>
+    </header>
+
+    <!-- =============== MAIN =============== -->
+
+    <!-- =============== IMAGES =============== -->
+    <!-- =============== IMAGES =============== -->
+	<div class="image_container">
+    <div class="gallery">
+        <h2>Uploaded Image</h2>
+        <img id="uploaded_image" src="{{ url_for('static', filename='images/img.jpg') }}" />
+         <p id="uploaded_image_filename">Uploaded Face:</p>
+    </div>
+    <div class="gallery">
+        <h2>Similar Images</h2>
+        <img id="similar_image" src="{{ url_for('static', filename='images/default_image.jpg') }}" />
+        <p id="similar_image_filename">Similar Face:</p>
+        <p id="similarity_value">Similarity Value:</p>
+    </div>
+</div>
+
+    <!-- =============== OPERATIONS =============== -->
+    <div class="operations_wrapper">
+        <form id="myform" enctype="multipart/form-data" method="post">
+            <div class="btn">
+                <div class="upload__button">
+                    <input type="file" class="custom-file-input" name="image" id="image">
+                    <button type="submit" class="btn-primary" name="image_upload_button" id="image_upload_button">
+                        Upload Image
+                        <i class="ri-image-fill button__icon"></i>
+                    </button>
+                </div>
+                <div class="download__button">
+                    <button type="submit" class="btn-primary" name="download_button" id="download_button">
+                        Download Report
+                        <i class="ri-file-download-fill button__icon"></i>
+                    </button>
+                </div>
+                <div class="email__sending">
+                    <div class="send__email">
+                        <input type="email" placeholder="Enter Valid Mail" value="support.ai@giindia.com"
+                            name="alert_email_textbox" id="alert_email_textbox">
+                    </div>
+                    <div class="toggle__content">
+                        <label class="toggle__label">
+                            <input type="checkbox" class="toggle__check" name="alert_email_checkbox"
+                                id="alert_email_checkbox">
+                            <span class="email__label">Send Alert</span>
+                            <div class="toggle__rail">
+                                <span class="toggle__circle"></span>
+                                <span class="toggle__border"></span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</body>
+
+</html>
