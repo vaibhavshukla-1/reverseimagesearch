@@ -14,24 +14,28 @@
 </head>
 <style>
  .image_container {
-            display: flex; /* Display images side by side */
-            justify-content: space-between; /* Space them evenly */
-            align-items: center; /* Align vertically */
-            margin-bottom: 20px;
-        }
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
 
-        .image_container .gallery {
-            max-width: 45%; /* Limit maximum width */
-        }
+.gallery {
+    max-width: 45%;
+}
 
-        .image_container h2 {
-            margin-bottom: 10px;
-        }
+.image_wrapper {
+    width: 100%; /* Set a fixed width for the image container */
+    height: 400px; /* Set a fixed height for the image container */
+    overflow: hidden; /* Hide any overflow if the image is larger */
+}
 
-        .image_container img {
-            max-width: 100%; /* Make images responsive */
-            height: auto;
-        }
+.image_wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Maintain aspect ratio and cover the container */
+}
+
         </style>
 <body>
     <!--=============== AJAX ===============-->
@@ -122,20 +126,24 @@
     <!-- =============== MAIN =============== -->
 
     <!-- =============== IMAGES =============== -->
-    <!-- =============== IMAGES =============== -->
-	<div class="image_container">
+<div class="image_container">
     <div class="gallery">
         <h2>Uploaded Image</h2>
-        <img id="uploaded_image" src="{{ url_for('static', filename='images/img.jpg') }}" />
-         <p id="uploaded_image_filename">Uploaded Face:</p>
+        <div class="image_wrapper">
+            <img id="uploaded_image" src="{{ url_for('static', filename='images/img.jpg') }}" />
+        </div>
+        <p id="uploaded_image_filename">Uploaded Face:</p>
     </div>
     <div class="gallery">
         <h2>Similar Images</h2>
-        <img id="similar_image" src="{{ url_for('static', filename='images/default_image.jpg') }}" />
+        <div class="image_wrapper">
+            <img id="similar_image" src="{{ url_for('static', filename='images/default_image.jpg') }}" />
+        </div>
         <p id="similar_image_filename">Similar Face:</p>
         <p id="similarity_value">Similarity Value:</p>
     </div>
 </div>
+
 
     <!-- =============== OPERATIONS =============== -->
     <div class="operations_wrapper">

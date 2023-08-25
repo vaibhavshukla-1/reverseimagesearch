@@ -5,13 +5,15 @@ import cv2
 import numpy as np
 import base64
 from dlib_face_embeddings import create_face_embeddings
+from dlib_face_embeddings import merge_face_embeddings
+from dlib_face_embeddings import create_face_embeddings_folder
 from test import find_most_similar_images_demo
-from parameters import LATEST_ENCODING_PATH
+from parameters import LATEST_ENCODING_PATH, DLIB_FACE_ENCODING_PATH
 from werkzeug.utils import secure_filename
 import json
 
 app = Flask(__name__, static_folder='static')
-app.config["IMAGE_UPLOADS"] = "static/images/"
+app.config["IMAGE_UPLOADS"] = "testing/"
 app.config["ALLOWED_IMAGE_EXTENSIONS"] = ["JPEG", "JPG", "PNG"]
 
 # Assuming t1.create_embedding returns an image embedding
@@ -61,6 +63,8 @@ def index():
                 return "Unsupported image format. Please use JPEG, JPG, or PNG."
 
             try:
+                #print("Creating embedding of folder")
+                create_face_embeddings_folder('testing/')
                 image_filename = secure_filename(image.filename)
                 image_path = os.path.join(app.config["IMAGE_UPLOADS"],image_filename)
                 image.save(image_path)
@@ -68,10 +72,14 @@ def index():
                 #print("image path ",image_path)
 
                 # Call the create_embedding function from t1.py
+                #print("Creating embedding of uploaded image")
                 create_face_embeddings(image_path)
                 
+                
                 # Call the find_most_similar function from t2.py
+                print("fetching results")
                 results = find_most_similar_images_demo(LATEST_ENCODING_PATH)
+                print("result received")
                 most_similar_image_path = results[0]
                 similarity = results[1]
                 #print("most similar ",most_similar_image_path)
@@ -87,7 +95,9 @@ def index():
                 similar_image_filename = get_filename_without_extension(os.path.basename(most_similar_image_path))
                 
                 # ... (rest of the code)
-
+                print("Merging embeddings")
+                merge_face_embeddings(LATEST_ENCODING_PATH,DLIB_FACE_ENCODING_PATH)
+                print("merge successful")
                 return jsonify({
                     'uploaded': {
                         'image': base64.b64encode(uploaded_img_encoded).decode('utf-8'),
