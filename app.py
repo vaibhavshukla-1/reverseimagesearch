@@ -8,6 +8,7 @@ from dlib_face_embeddings import create_face_embeddings
 from test import find_most_similar_images_demo
 from parameters import LATEST_ENCODING_PATH
 from werkzeug.utils import secure_filename
+import json
 
 app = Flask(__name__, static_folder='static')
 app.config["IMAGE_UPLOADS"] = "static/images/"
@@ -29,7 +30,26 @@ def allowed_image(filename: str):
         return True
     else:
         return False
-    
+        
+@app.route('/download_report', methods=["POST"])
+def download_report():
+    try:
+        data = request.get_json()
+
+        uploaded_face_name = data['uploaded']['filename']
+        similar_face_name = data['similar']['filename']
+        similarity_value = data['similar']['similarity']
+
+        csv_data = f"Uploaded Face,Similar Face,Similarity Value\n{uploaded_face_name},{similar_face_name},{similarity_value}"
+
+        response = Response(csv_data, content_type='text/csv')
+        response.headers['Content-Disposition'] = 'attachment; filename=report.csv'
+
+        return response
+    except Exception as e:
+        return "Error generating CSV report"
+
+            
 @app.route('/', methods=["GET", "POST"])
 def index():
     if request.method == "POST":

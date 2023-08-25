@@ -4,6 +4,19 @@ import face_recognition
 from parameters import LATEST_ENCODING_PATH, \
                        NUMBER_OF_JITTERS, \
                        FACE_EMBEDDING_MODEL
+import os
+
+def allowed_image(filename: str):
+    if "." not in filename:
+        return False
+
+    extension = filename.rsplit(".", 1)[1]
+
+    if extension.upper() in app.config["ALLOWED_IMAGE_EXTENSIONS"]:
+        return True
+    else:
+        return False
+        
 
 def create_face_embeddings(image_path):
     '''

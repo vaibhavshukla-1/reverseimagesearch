@@ -20,7 +20,10 @@ def find_most_similar_images_demo(LATEST_ENCODING_PATH,num_similar_images=6):
     for demo_encoding, demoName in zip(demo_encodings, demoNames):
         similar_images = []
         similarities = []
-
+        print(demoName)
+        demoName = os.path.basename(demoName)
+        idx = demoName.index('.')
+        demoName=demoName[:idx] 
         for knownEncoding, knownName in zip(knownEncodings, knownNames):
             similarity = face_recognition.face_distance(np.array([knownEncoding]), np.array(demo_encoding))[0]
             similarities.append(similarity)
@@ -32,6 +35,8 @@ def find_most_similar_images_demo(LATEST_ENCODING_PATH,num_similar_images=6):
 
         for similar_image_name, similarity in most_similar_images:
             if similar_image_name != demoName:
+                print(demoName)
+                print(similar_image_name)
                 most_similar_image_path = os.path.join(similar_image_folder, similar_image_name)
                 results.append(most_similar_image_path)
                 results.append(similarity)

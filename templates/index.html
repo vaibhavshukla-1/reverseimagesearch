@@ -65,7 +65,7 @@
                 });
             });
         });
-
+        
         function upload_file() {
             var formData = new FormData($('#myform')[0]);
             $.ajax({
@@ -90,6 +90,26 @@
                 }
             });
         }
+        $(document).ready(function () {
+        $('#download_button').click(function () {
+            download_report();
+        });
+    });
+
+    function download_report() {
+        var uploadedImageFilename = $('#uploaded_image_filename').text().replace('Uploaded Face: ', '');
+        var similarImageFilename = $('#similar_image_filename').text().replace('Similar Face: ', '');
+        var similarityValue = $('#similarity_value').text().replace('Similarity Value: ', '');
+
+        var csvContent = "Uploaded Face,Similar Face,Similarity Value\n" +
+            uploadedImageFilename + "," + similarImageFilename + "," + similarityValue;
+
+        var blob = new Blob([csvContent], { type: 'text/csv' });
+        var link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'report.csv';
+        link.click();
+    }
     </script>
 
     <!-- =============== HEADER =============== -->
